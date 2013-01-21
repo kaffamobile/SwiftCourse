@@ -1,0 +1,59 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+_pragma(classify_level=debug)
+## A border container test
+## Class sw_border_container_test_dialog includes two border
+## containers (group boxes).
+##
+## The upper one has no label, so its default corner shape is
+## square. The lower one has a label, so its default corner
+## shape is rounded. The lower border container itself contains
+## a sw_container to introduce different top spacing.
+##
+# activate with t << sw_border_container_test_dialog.open()
+#
+def_slotted_exemplar( :sw_border_container_test_dialog,
+	              {
+			      { :top_container, _unset }
+		      },
+		      :model )
+$
+
+_pragma(classify_level=restricted)
+sw_border_container_test_dialog.define_slot_access( :top_container, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_border_container_test_dialog.activate_in( a_frame )
+	## 
+	## 
+
+	.top_container << top_c << sw_canvas_container.new( a_frame, _unset, 1,
+							    :outer_spacing, 4,
+							    :row_spacing, 4,
+							    :col_spacing, 4,
+							    :width, 250,
+							    :height, 200 )
+
+	bc1 << sw_border_container.new( top_c, 1, 1)
+	sw_label_item.new( bc1, "Hello World",
+			   :col_alignment, :centre, :row_alignment, :centre)
+
+
+	bc2 << sw_border_container.new( top_c, 1, 1,
+					:label, "Group Box label" )
+
+	c << sw_container.new( bc2, _unset, 1,
+			       :outer_spacing, 3,
+			       :top_spacing, 10 )
+	sw_label_item.new( c, "Row 1" )
+	sw_label_item.new( c, "Row 2" )
+	
+_endmethod
+$
+

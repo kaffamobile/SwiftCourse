@@ -1,0 +1,332 @@
+#% text_encoding = utf8
+
+_package user
+
+_pragma(classify_level=restricted)
+def_slotted_exemplar(
+	:demo_dialog_01,
+	{
+		{:controls, _unset, :writable, :readonly} 
+	},
+	:model
+)
+$
+
+demo_dialog_01.define_shared_constant(
+	:max_collection_items,
+	100,
+	:public
+)
+$
+
+demo_dialog_01.define_shared_constant(
+	:external_name_sort_proc,
+	_proc(l, r)
+		_return l.external_name.canonical _cf r.external_name.canonical
+	_endproc,
+	:private
+)
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.init()
+	.controls << property_list.new()
+		
+	_return _self
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method demo_dialog_01.activate_in(frame)
+	.controls[:canvas] << canvas << sw_canvas_container.new(
+		frame,
+		_unset, 1,
+		:height,     300,
+		:width,      400,
+		:min_width,  400,
+		:min_height, 300,
+		:row_resize_values, {0, 1}
+	)
+
+	_self.create_toolbar(canvas)
+	_self.create_content(canvas)
+
+	_self.title << "SWIFT Course Test Dialog #01"
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.create_toolbar(parent)
+	.controls[:toolbar_container] << toolbar_container << sw_toolbar_container.new(
+		parent,
+		_false,
+		:background_type,   :container,
+		:show_separators?,  _true,
+		:col_resize_values, {1, 0}
+	)
+
+	.controls[:toolbar_action] << toolbar_action << toolbar_container.create_toolbar(:col_spacing, 2)
+	.controls[:toolbar_search] << toolbar_search << toolbar_container.create_toolbar(:col_spacing, 2)
+
+	.controls[:toolbar_button_new] << sw_button_item.new(
+		toolbar_action,
+		:image,      {:page, :silk_ui_resources},
+		:model,      _self,
+		:selector,   {:toolbar_button_action|()|, :new}, 
+		:identifier, :new
+	)
+
+	.controls[:toolbar_button_open] << sw_button_item.new(
+		toolbar_action,
+		:image,      {:page_add, :silk_ui_resources},
+		:model,      _self,
+		:selector,   {:toolbar_button_action|()|, :open},
+		:identifier, :open
+	)
+
+	.controls[:toolbar_button_save] << sw_button_item.new(
+		toolbar_action,
+		:image,      {:page_save, :silk_ui_resources},
+		:model,      _self,
+		:selector,   {:toolbar_button_action|()|, :save},
+		:identifier, :save
+	)
+
+	.controls[:toolbar_textbox_search] << sw_text_item.new(
+		toolbar_search,
+		#:incremental_change_selector, :filter_search|()|,
+		:min_width, 140,
+		:identifier, :filter_text
+	)
+
+	.controls[:toolbar_button_find] << sw_button_item.new(
+		toolbar_search,
+		:image,      {:page_find, :silk_ui_resources},
+		:model,      _self,
+		:selector,   {:toolbar_button_action|()|, :search},
+		:identifier, :search
+	)
+
+
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.create_content(parent)
+	.controls[:content_container] << content_container << sw_container.new(
+		parent,
+		1, 2,
+		:outer_spacing, 4,
+		:col_spacing,   8,
+		:col_resize_values, {2, 5},
+		:resize_cols?,  _true,
+		:show_resize_indicator?, _true
+#		:col_alignment, :fill,
+#		:row_alignment, :fill
+	)
+
+	.controls[:tree] <<	sw_tree.new(
+		content_container,
+		:model,              _self,
+		:selection_notifier, :tree_selection|()|,
+		:data_selector,      :populate_tree|()|,
+		:aspect,             :scd_01_tree,
+		:min_width,          150
+	)
+
+	_self.changed( :scd_01_tree, :renew )
+
+	.controls[:data_details_container] << data_details << sw_stack_container.new(content_container, :min_width, 100)
+
+	.controls[:dataset_details_container]    << dataset_details_container    << sw_container.new(data_details, _unset, 1, :identifier, :dataset_details_container)
+	.controls[:collection_details_container] << collection_details_container << sw_container.new(data_details, _unset, 1, :identifier, :collection_details_container)
+	sw_container.new(data_details, _unset, 1, :identifier, :empty_details_container)
+	data_details.value << :empty_details_container
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method demo_dialog_01.toolbar_button_action(_gather args)
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method demo_dialog_01.populate_tree()
+	_local tree << .controls[:tree]
+	_local sorted_datasets <<
+		sorted_collection.new_from(
+			rope.new_from_iter(gis_program_manager, :cached_datasets|()|),
+			_self.external_name_sort_proc
+		)
+	
+	_for ds _over sorted_datasets.fast_elements()
+	_loop
+		_local node << sw_tree_element.new(tree, :default_col_alignment, :left)
+		node.children_handler << handler.new(_self, :populate_dataset_subtree|()|)
+		node.set_data(:type, :dataset)
+		node.set_data(:object, ds)
+		sw_label_item.new(node, ds.external_name)
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method demo_dialog_01.populate_dataset_subtree(parent)
+	_local ds << parent.get_data(:object)
+	_local sorted_collections << ds.collections.as_sorted_collection(_self.external_name_sort_proc)
+	
+	_for col _over sorted_collections.fast_elements()
+	_loop
+		_if _not col.name.includes?(%!) _and _not col.visible_non_geometry_field_names.empty?
+		_then
+			_local node << sw_tree_element.new(parent, :default_col_alignment, :left)
+			node.set_data(:type, :collection)
+			node.set_data(:object, col)
+			sw_label_item.new(node, col.external_name)
+		_endif
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method demo_dialog_01.tree_selection(tree, selected_items)
+	_local selected_item << selected_items.an_element()
+	_if selected_item _isnt _unset
+	_then
+		_local type   << selected_item.get_data(:type)
+		_local object << selected_item.get_data(:object)
+		_if type _is :dataset
+		_then
+			_self.show_dataset_details(object)
+		_elif type _is :collection
+		_then
+			_self.show_collection_details(object)
+		_endif
+	_endif
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.show_dataset_details(dataset)
+	_local container << .controls[:dataset_details_container]
+	container.remove_all()
+	
+	_local doc << formatted_document.new()
+	
+	doc.add_element(fdoc_heading_element.new(dataset.external_name, :level, :h1))
+
+	doc.add_element(fdoc_heading_element.new("Properties", :level, :h2))
+	paragraph << fdoc_paragraph_element.new()
+	_self.add_dataset_properties(paragraph, dataset)
+	doc.add_element(paragraph)
+
+	
+	doc.add_element(fdoc_heading_element.new("Files", :level, :h2))
+	paragraph << fdoc_paragraph_element.new()
+	_self.add_dataset_files(paragraph, dataset)
+	doc.add_element(paragraph)
+
+	doc.display_in(container)
+	
+	.controls[:data_details_container].value << :dataset_details_container
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.add_dataset_properties(doc, dataset)
+	doc.add_element(
+		fdoc_table_element.new(
+			{"Name", "Value"},
+			{
+				{"Current alternative", write_string("|", dataset.alternative_path.join_as_strings(%|))},
+				{"Current checkpoint",  dataset.checkpoint.default("")},
+				{"Mode",                dataset.mode.write_string}
+			},
+			:max_display_rows, 3
+		)
+	)
+
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.add_dataset_files(doc, dataset)
+	_local list << fdoc_list_element.new(_unset)
+
+	_for file _over dataset.files.fast_elements()
+	_loop
+		_local list_item << fdoc_list_item_element.new(_unset)
+		list_item.add_element(fdoc_text_element.new(file.name))
+		list.add_element(list_item)
+	_endloop
+	
+	
+	doc.add_element(list)
+_endmethod
+$
+
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.create_collection_table(fields)
+	_local container << .controls[:collection_details_container]
+	container.remove_all()
+
+	_local field_names << simple_vector.new(fields.size + 1)
+	field_names[1] << "#"
+	
+	_for i _over 1.upto(fields.size)
+	_loop
+		field_names[i + 1] << fields[i].external_name
+	_endloop
+	
+	.controls[:collection_table] <<	table << sw_table.new(container)
+	table.set_column_labels(field_names)
+
+	table.set_column_sort_procedure(1, sw_table.strings_with_numbers_sort_proc)
+	table.set_column_width(1, 25)
+	
+	_for i _over 2.upto(table.n_cols)
+	_loop
+		table.set_column_sort_procedure(i, sw_table.default_sort_proc)
+		table.enable_column_filter(i, _true)
+	_endloop
+		
+	_return table
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.fill_collection_table(table, collection, fields)
+	_local row << 0
+	_for record _over collection.fast_elements()
+	_loop
+		_if (row +<<1) > _self.max_collection_items
+		_then
+			_leave
+		_endif
+
+		table.add_label(row, 1, row.write_string);
+		
+		_for cell _over 1.upto(fields.size)
+		_loop
+			table.add_label(row, cell + 1, record.perform(fields[cell].name))
+		_endloop
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method demo_dialog_01.show_collection_details(collection)
+	_local fields << collection.visible_non_geometry_fields
+	_local table << _self.create_collection_table(fields)
+	
+	_self.fill_collection_table(table, collection, fields)
+
+	.controls[:data_details_container].value << :collection_details_container
+	
+	table.refresh()
+_endmethod
+$

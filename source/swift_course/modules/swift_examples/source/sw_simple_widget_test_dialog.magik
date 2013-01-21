@@ -1,0 +1,115 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+_pragma(classify_level=debug)
+## A dialog to demonstrate some simple widgets, and also text windows
+##
+# activate with t << sw_simple_widget_test_dialog.open()
+#
+def_slotted_exemplar( :sw_simple_widget_test_dialog,
+	              {
+			      { :top_container, _unset },
+			      { :test_button,   _unset } 
+		      },
+		      :model )
+$
+
+sw_simple_widget_test_dialog.define_slot_access( :test_button, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_simple_widget_test_dialog.activate_in( a_frame )
+	## 
+	## 
+
+	.top_container << top_c << sw_canvas_container.new( a_frame, 1, _unset,
+						:width, 400, :height, 300,
+						:resize_rows?, _true, :resize_cols?, _true,
+				                :row_resize_values, {50,50}, :col_resize_values, {50,50})
+	top_c.colour << colour.called(:white)
+	
+	a_container << sw_container.new( top_c, _unset, 1, :row_spacing, 5, :outer_spacing, 10)
+	a_container.default_row_alignment << :centre
+	a_container.default_col_alignment << :centre
+	a_container.identifier << :tab_4
+
+	sw_check_box_item.new( a_container, :label, "A check box" )
+
+	button_1 << sw_button_item.new( a_container, :image, {:help, :ui_resources} )
+
+	# create a radio group in its own container - ensure one item always selected
+	rg_con << sw_container.new( a_container, 1, _unset, :outer_spacing, 10)
+	group << radio_group.new( rg_con, :always_one?, _true )
+	# create a sw_toggle_item
+	ti << sw_toggle_item.new(rg_con, :label, "One")
+#	ti.value << _true
+	# add it to the radio group
+	group.manage_child(ti, :one)
+	# create remaining toggle items
+	ti << sw_toggle_item.new(rg_con, :label, "Two")
+	ti.value << _false
+	group.manage_child(ti, :two)
+	ti << sw_toggle_item.new(rg_con, :label, "Three")
+	ti.value << _false
+	group.manage_child(ti, :three)
+	# set the initial value for the radio group
+	group.value << :three
+
+	text_item_1 << sw_text_item.new( a_container,
+					  :value, "Hello",
+					  :editable?, _true,
+					  :display_length, 16 )
+
+	sw_separator.new( a_container,
+			  :label, "A Combo box",
+			  :col_alignment, :fill )
+	
+	# this is a combo box (editable? true by default)
+	text_item_2 << sw_text_item.new( a_container,
+					  :display_length, 16 )
+	text_item_2.text_items << {" ", "one", "two", "three"}
+
+	sw_separator.new( a_container,
+			  :label, "A Dropdown list",
+			  :col_alignment, :fill )
+
+	# this is a dropdown list - editable? set to false
+	text_item_3 << sw_text_item.new( a_container,
+					  :editable?, _false )
+	text_item_3.text_items << {{:a,"Apple"},{:b,"Banana"},{:c,"Cat"},{:d,"Dog"},{:cactus,"Cactus"}}
+	
+	# text_container is in second column of top_c
+	text_container << sw_container.new( top_c, _unset, 1, :row_spacing, 5, :outer_spacing, 10)
+
+	text_window_1 << sw_text_window.new( text_container, :col_alignment, :fill)
+	text_window_1.text << "This is a text window with no horizontal scrollbar, so text should wrap appropriately!"
+
+	sw_separator.new( text_container, :col_alignment, :fill )
+
+	text_window_2 << sw_text_window.new( text_container, :col_alignment, :fill)
+	text_window_2.enable_horizontal_scrollbar? << _true
+	text_window_2.text << "This is a text window with a horizontal scrollbar, so text should not wrap!" +
+			       character.newline +
+			       "However it should still handle newline characters!"
+
+	sw_separator.new( text_container, :col_alignment, :fill )
+
+	text_window_3 << sw_text_window.new( text_container, :col_alignment, :fill )
+	text_window_3.editable? << _true
+	text_window_3.text << "Hello - this is an editable text window!"
+
+	sw_separator.new( text_container, :col_alignment, :fill )
+	
+	text_window_4 << sw_text_window.new( text_container, :col_alignment, :fill )
+	text_window_4.enable_horizontal_scrollbar? << _true
+	text_window_4.editable? << _true
+	text_window_4.text << "Hello - this is an editable text window with a scrollbar!"
+
+_endmethod
+$
+
+

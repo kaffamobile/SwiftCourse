@@ -1,0 +1,36 @@
+#% text_encoding = utf8
+
+_package user
+
+_pragma(classify_level=basic, usage=internal)
+def_slotted_exemplar(:swift_course_form, {}, :model)
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.activate_in(frame)
+	_local canvas << sw_canvas_container.new(
+		frame,
+		_unset, 1,
+		:height,     300,
+		:width,      400,
+		:min_width,  400,
+		:min_height, 300
+	)
+
+	_self.create_content(canvas)
+
+	_self.title << "SWIFT Course Form"
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_form.create_content(parent)
+
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.test_dialog()
+	_return _self.exemplar.new().activate()
+_endmethod
+$

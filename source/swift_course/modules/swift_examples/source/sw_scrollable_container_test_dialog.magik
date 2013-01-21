@@ -1,0 +1,101 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+_pragma(classify_level=debug)
+## A dialog to demonstrate a scrollable container.  The
+## scrollable container contains a border container which does
+## not resize. Scroll bars are added when the outer container
+## is too small for its contents.
+## Each button has a
+## tooltip, which repeats its name, and a callback method to
+## write its name at the command line.
+##
+## The scrollable container has a context menu, which includes
+## a submenu
+##
+## activate with t << sw_scrollable_container_test_dialog.open()
+##
+def_slotted_exemplar( :sw_scrollable_container_test_dialog,
+	              {
+			      { :top_con,    _unset },
+			      { :scroll_con, _unset }
+		      },
+		      :model )
+$
+_pragma(classify_level=restricted)
+sw_scrollable_container_test_dialog.define_slot_access( :top_con, :read, :public )
+$
+_pragma(classify_level=restricted)
+sw_scrollable_container_test_dialog.define_slot_access( :scroll_con, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_scrollable_container_test_dialog.activate_in( a_frame ) 
+
+	.top_con << top_c << sw_canvas_container.new( a_frame, 1, 1,
+					  :outer_spacing, 10,
+					  :width, 300, :height, 300 )
+	
+	.scroll_con << sc << sw_scrollable_container.new( top_c )
+								    
+	c << sw_border_container.new( sc, 5, 5,
+				      :resize_x?, _false,
+				      :resize_y?, _false,
+				      :row_alignment, :top,
+				      :col_alignment, :left,
+				      :outer_spacing, 10,
+				      :row_spacing, 40,
+				      :col_spacing, 20,
+				      :default_row_alignment, :centre,
+				      :default_col_alignment, :centre )
+
+	_for i _over range( 1, 25 )
+	_loop
+		str << write_string( "Button ", i )
+		sw_button_item.new( c,
+				    :model,    _self,
+				    :selector, {:button_callback|()|, str},
+				    :label,    str,
+				    :tooltip,  str )
+	_endloop
+
+	menu << sw_menu_container.new( sc )
+
+	sw_menu_button_item.new( menu,
+				 :image, {:help, :ui_resources},
+				 :label, "Help" )
+
+	# Sub 1
+	sub_menu << sw_submenu_container.new( menu, "A Sub Menu" )
+
+	sw_menu_button_item.new( sub_menu,
+				 :image, {:help, :ui_resources},
+				 :label, "Sub Button 1" )
+	sw_menu_button_item.new( sub_menu,
+				 :label, "Sub Button 2" )
+	menu.add_separator()
+
+	sw_menu_button_item.new( menu,
+				 :label, "Another Button" )
+
+	sw_menu_button_item.new( menu,
+				 :label, "And another" )
+
+
+
+_endmethod
+$
+
+
+_pragma(classify_level=restricted)
+_method sw_scrollable_container_test_dialog.button_callback( name )
+	##
+	##
+	write( name )
+_endmethod
+$
+

@@ -1,0 +1,32 @@
+# External Parent images:
+swaf:
+	title		= Run Smallworld Application Framework
+	program         = sw_magik_win32
+	image		= swaf.msf
+	args		= -Mextdir %TEMP%
+	product		= gis
+	cambridge_root  = \\storage\products\Gis430\cambridge_db
+
+# Cambridge Database Image Build definitions
+# Includes examples for Schematics and Translators products, if present.
+
+cam_db_closed_swaf:
+	title		= Run Cambridge closed SWAF
+	program         = sw_magik_win32
+	args		= -Mextdir %TEMP%
+	product		= gis
+	cambridge_root  = \\storage\products\Gis430\cambridge_db
+	images_dir      = \\realworld\data\Projects\UT\SwiftCourse\images
+	SW_ACE_DB_DIR   = \\storage\products\Gis430\cambridge_db\ds\ds_admin
+	image		= %images_dir%\cam_db_closed_swaf.msf
+
+
+cam_db_open_swaf:
+	title		= Run Cambridge Open Smallworld Application Framework
+	program         = sw_magik_win32
+	args		= -Mextdir %TEMP%
+	product		= gis
+	cambridge_root  = \\storage\products\Gis430\cambridge_db
+	images_dir      = \\realworld\data\Projects\UT\SwiftCourse\images
+	SW_ACE_DB_DIR   = \\storage\products\Gis430\cambridge_db\ds\ds_admin
+	image		= %images_dir%\cam_db_open_swaf.msf

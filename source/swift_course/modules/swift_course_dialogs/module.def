@@ -1,0 +1,9 @@
+swift_course_dialogs 1  
+
+description
+	Dialogs for the Realworld SWIFT course
+end
+
+requires
+	silk_ui_resources
+end

@@ -1,0 +1,400 @@
+#% text_encoding = utf8
+
+_package user
+
+_pragma(classify_level=basic, usage=internal)
+def_slotted_exemplar(:swift_course_dialog_final, {}, :model)
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.dataset
+	_return gis_program_manager.cached_dataset(:electricity)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.application
+	_return smallworld_product.application(:cam_db_swaf_professional)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog_final.activate_in(frame)
+	_local canvas << sw_canvas_container.new(
+		frame,
+		_unset, 1,
+		:height,     400,
+		:width,      500,
+		:min_width,  400,
+		:min_height, 300,
+		:row_resize_values, {0, 1}
+	)
+
+	_self.create_toolbar(canvas)
+	_self.create_content(canvas)
+
+	_self.title << "SWIFT Course Dialog"
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_toolbar(parent)
+	_local toolbar_container << sw_toolbar_container.new(
+		parent,
+		_false,
+		:background_type,   :container,
+		:show_separators?,  _true
+	)
+	
+	_local toolbar_01 << toolbar_container.create_toolbar(:col_spacing, 2)
+	_local toolbar_02 << toolbar_container.create_toolbar(:col_spacing, 2)
+	
+	sw_button_item.new(toolbar_01, :image,      {:vector,        :silk_ui_resources})
+	sw_button_item.new(toolbar_01, :image,      {:vector_add,    :silk_ui_resources})
+	sw_button_item.new(toolbar_01, :image,      {:vector_delete, :silk_ui_resources})
+	
+	sw_button_item.new(toolbar_02, :image,      {:line_orange,        :silk_ui_resources})
+	sw_button_item.new(toolbar_02, :image,      {:line_orange_add,    :silk_ui_resources})
+	sw_button_item.new(toolbar_02, :image,      {:line_orange_delete, :silk_ui_resources})
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_content(parent)
+	_local tab_container << sw_vertical_tab_container.new(parent)
+	
+	_local form_page  << tab_container.new_tab("Form",      {:application_form,      :silk_ui_resources})
+	_local tree_page  << tab_container.new_tab("Tree",      {:sitemap_color,         :silk_ui_resources})
+	_local table_page << tab_container.new_tab("Table",     {:table,                 :silk_ui_resources})
+	_local align_page << tab_container.new_tab("Alignment", {:application_view_tile, :silk_ui_resources})
+	_local doc_page   << tab_container.new_tab("Document",  {:page_white_text,       :silk_ui_resources})
+	
+	_self.create_form_page(form_page)
+	_self.create_tree_page(tree_page)
+	_self.create_table_page(table_page)
+	_self.create_alignment_page(align_page)
+	_self.create_doc_page(doc_page)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_form_page(parent)
+	_local frame << sw_container.new(
+		parent,
+		_unset, 1,
+		:outer_spacing, 5,
+		:row_resize_values, {1, 0}
+	)
+	
+	_local border_container << sw_border_container.new(frame, 1, 1, :label, "Instellingen")
+	_local container << sw_container.new(
+		border_container, 10, 2,
+		:outer_spacing,     3,
+		:top_spacing,       5,
+		:row_resize_values, {0,0,0,0,0,0,0,0,0,1},
+		:col_resize_values, {0, 1},
+		:col_spacing, 3,
+		:row_spacing, 3,
+		:default_col_alignment, :left,
+		:default_row_alignment, :top
+	)
+	
+	sw_label_item.new(container, "Tekstvak", :min_width, 100)
+	sw_text_item.new(container, :editable?, _true, :col_alignment, :fill, :prompt_text, "Voer hier tekst in")
+	
+	sw_label_item.new(container, "Tekstvak alleen lezen")
+	sw_text_item.new(container, :editable?, _false, :col_alignment, :fill, :value, "Niet wijzigbaar")
+	
+	sw_label_item.new(container, "Lengte in meters")
+	sw_managed_text_item.new(container, :editable?, true, :col_alignment, :fill, :manager, unit_value_manager.new(unit_manager.unit(:m)))
+	
+	sw_label_item.new(container, "Dropdown lijst")
+	sw_text_item.new(container, :min_width, 100, :display_length, 16, :editable?, _false, :text_items, {"Een", "Twee", "Drie", "Vier"})
+	
+	sw_label_item.new(container, "Combobox")
+	sw_text_item.new(container, :min_width, 100, :display_length, 16, :editable?, _true, :text_items, {"Alpha", "Beta", "Gamma", "Delta"})
+	
+	sw_label_item.new(container, "Checkbox")
+	sw_check_box_item.new(container)
+
+	sw_label_item.new(container, "Radio buttons")
+	_local radio_container << sw_container.new(container, _unset, 1, :default_col_alignment, :left)
+	_local radio_group << sw_radio_group.new(_true)
+	radio_group.add(sw_toggle_item.new(radio_container, :label, "Eerste optie"))
+	radio_group.add(sw_toggle_item.new(radio_container, :label, "Tweede optie"))
+	radio_group.add(sw_toggle_item.new(radio_container, :label, "Derde optie"))
+	
+
+	_local button_container << sw_container.new(
+		frame,
+		1, 3,
+		:col_spacing,    5,
+		:resize_x?,      _true,
+		:col_alignment,  :right,
+		:top_spacing,    8
+	)
+	
+	sw_button_item.new(
+		button_container,
+		:label,     "OK",
+		:min_width, 72
+	)
+	
+	sw_button_item.new(
+		button_container,
+		:label,     "Cancel",
+		:min_width, 72
+	)
+	sw_button_item.new(
+		button_container,
+		:label,     "Apply",
+		:min_width, 72
+	)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_tree_page(parent)
+	_local tree << sw_tree.new(
+		parent,
+		:model,              _self,
+		:data_selector,      :populate_substation_tree|()|,
+		:aspect,             :substation_tree,
+		:selection_mode,     :none,
+		:min_width,          150
+	)
+
+	_self.changed(:substation_tree, :renew)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog_final.populate_substation_tree(tree)
+	_local substations << _self.dataset.collection(:substation)
+	
+	_for ss _over substations.fast_elements()
+	_loop
+		_local node << sw_tree_element.new(tree, :default_col_alignment, :left)
+		node.children_handler << handler.new(_self, :populate_supply_points|()|, ss)
+
+		label << sw_label_item.new(node, ss.known_as, :min_width, 200)
+		sw_button_item.new(
+			node,
+			:image,            {:picture_go, :silk_ui_resources},
+			:show_background?, _true,
+			:model,            _self,
+			:tooltip,          "Show in map",
+			:selector,         {:goto_object|()|, ss}
+		)
+		sw_button_item.new(
+			node,
+			:image,            {:picture_edit, :silk_ui_resources},
+			:show_background?, _true,
+			:model,            _self,
+			:tooltip,          "Select",
+			:selector,         {:select_object|()|, ss.location}
+		)
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog_final.populate_supply_points(substation, parent_node)
+	_for sp _over substation.supply_points()
+	_loop
+		_local node << sw_tree_element.new(parent_node, :default_col_alignment, :left)
+		label << sw_label_item.new(node, sp.id, :min_width, 200)
+		sw_button_item.new(
+			node,
+			:image,            {:picture_go, :silk_ui_resources},
+			:show_background?, _true,
+			:model,            _self,
+			:tooltip,          "Show in map",
+			:selector,         {:goto_object|()|, sp}
+		)
+		sw_button_item.new(
+			node,
+			:image,            {:picture_edit, :silk_ui_resources},
+			:show_background?, _true,
+			:model,            _self,
+			:tooltip,          "Select",
+			:selector,         {:select_object|()|, sp.location}
+		)
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_table_page(parent)
+	_local table << sw_table.new(
+		parent,
+		:row_stripes?,   _true,
+		:selection_type, :row,
+		:selection_mode, :one
+	)
+	
+	table.set_column_labels({"ID", "Name", "Address 1", "Address 2", "Usage", "Sales", "Supply Point", ""})
+	
+	#Set column sortable and filterable, except the last column
+	_for i _over 1.upto(table.n_cols - 1)
+	_loop
+		table.set_column_sort_procedure(i, sw_table.default_sort_proc)
+		table.enable_column_filter(i, _true)
+	_endloop
+	
+	_self.fill_table_customer_data(table)
+	
+	#Required to show content
+	table.refresh()
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.fill_table_customer_data(table)
+	_for cs _over _self.dataset.collection(:customer).fast_elements()
+	_loop
+		_self.add_customer_row(table, cs)
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.add_customer_row(table, customer)
+	_local row_num << table.n_rows + 1
+	
+	table.set_row_data(row_num, customer)
+	
+	table.add_label(row_num, 1, customer.customer_id)
+	
+	table.add_cell(row_num, 2, {:default_col_alignment, :fill}, {:text_item, :text, customer.name,     :show_border?, _false})
+	table.add_cell(row_num, 3, {:default_col_alignment, :fill}, {:text_item, :text, customer.address1, :show_border?, _false})
+	table.add_cell(row_num, 4, {:default_col_alignment, :fill}, {:text_item, :text, customer.address2, :show_border?, _false})
+	table.add_label(row_num, 5, customer.usage)
+	table.add_label(row_num, 6, customer.sales)
+	
+	_if customer.supply_point _isnt _unset
+	_then
+		table.add_cell(row_num, 7, {}, {:link, customer.supply_point.id, :model, _self, :selector, {:select_object|()|, customer.supply_point.location}})
+	_endif
+	
+	table.add_cell(row_num, 8, {:default_col_alignment, :left},
+		{:button, :image, {:page_save,   :silk_ui_resources}, :show_background?, _true},
+		{:button, :image, {:page_delete, :silk_ui_resources}, :show_background?, _true}
+	)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_alignment_page(parent)
+	_local align_container << sw_container.new(
+		parent,
+		4, 4,
+		:col_resize_values, {1, 1, 1, 1},
+		:row_resize_values, {1, 1, 1, 1},
+		:col_spacing,   8,
+		:row_spacing,   8,
+		:outer_spacing, 4,
+		:resize_cols?,  _true,
+		:resize_rows?,  _true,
+		:show_resize_indicator?, _true,
+		:col_alignment, :fill,
+		:row_alignment, :fill
+	)
+	
+	sw_button_item.new(align_container, :label, "Button (1,1)", :row_alignment, :fill,   :col_alignment, :fill,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (1,2)", :row_alignment, :fill,   :col_alignment, :left,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (1,3)", :row_alignment, :fill,   :col_alignment, :centre, :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (1,4)", :row_alignment, :fill,   :col_alignment, :right,  :resize_x?, _true, :resize_y?, _true)
+	
+	sw_button_item.new(align_container, :label, "Button (2,1)", :row_alignment, :top,    :col_alignment, :fill,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (2,2)", :row_alignment, :top,    :col_alignment, :left,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (2,3)", :row_alignment, :top,    :col_alignment, :centre, :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (2,4)", :row_alignment, :top,    :col_alignment, :right)
+	
+	sw_button_item.new(align_container, :label, "Button (3,1)", :row_alignment, :centre, :col_alignment, :fill,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (3,2)", :row_alignment, :centre, :col_alignment, :left,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (3,3)", :row_alignment, :centre, :col_alignment, :centre, :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (3,4)", :row_alignment, :centre, :col_alignment, :right)
+	
+	sw_button_item.new(align_container, :label, "Button (4,1)", :row_alignment, :bottom, :col_alignment, :fill,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (4,2)", :row_alignment, :bottom, :col_alignment, :left,   :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (4,3)", :row_alignment, :bottom, :col_alignment, :centre, :resize_x?, _true, :resize_y?, _true)
+	sw_button_item.new(align_container, :label, "Button (4,4)", :row_alignment, :bottom, :col_alignment, :right,  :resize_x?, _true, :resize_y?, _true)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_dialog_final.create_doc_page(parent)
+	_local dataset << _self.dataset
+
+	_local doc << formatted_document.new()
+	
+	doc.add_element(fdoc_heading_element.new(dataset.external_name, :level, :h1))
+
+	doc.add_element(fdoc_heading_element.new("Properties", :level, :h2))
+	paragraph << fdoc_paragraph_element.new()
+	_self.add_dataset_properties(paragraph, dataset)
+	doc.add_element(paragraph)
+
+	
+	doc.add_element(fdoc_heading_element.new("Files", :level, :h2))
+	paragraph << fdoc_paragraph_element.new()
+	_self.add_dataset_files(paragraph, dataset)
+	doc.add_element(paragraph)
+
+	doc.display_in(parent)
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method swift_course_dialog_final.add_dataset_properties(doc, dataset)
+	doc.add_element(
+		fdoc_table_element.new(
+			{"Name", "Value"},
+			{
+				{"Current alternative", write_string("|", dataset.alternative_path.join_as_strings(%|))},
+				{"Current checkpoint",  dataset.checkpoint.default("")},
+				{"Mode",                dataset.mode.write_string}
+			},
+			:max_display_rows, 3
+		)
+	)
+
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method swift_course_dialog_final.add_dataset_files(doc, dataset)
+	_local list << fdoc_list_element.new(_unset)
+
+	_for file _over dataset.files.fast_elements()
+	_loop
+		_local list_item << fdoc_list_item_element.new(_unset)
+		list_item.add_element(fdoc_text_element.new(file.name))
+		list.add_element(list_item)
+	_endloop
+	
+	
+	doc.add_element(list)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog_final.goto_object(object)
+	_self.application.plugin(:maps).goto(object)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog_final.select_object(geom)
+	_self.goto_object(geom)
+	_self.application.plugin(:editor_manager).set_selection(geometry_set.new_from({geom}))
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog_final.test_dialog()
+	_return _self.exemplar.new().activate()
+_endmethod
+$

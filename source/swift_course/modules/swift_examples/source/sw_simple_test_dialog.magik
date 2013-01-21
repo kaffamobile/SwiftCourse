@@ -1,0 +1,68 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+_pragma(classify_level=debug)
+## A simple test dialog
+## Class sw_simple_test_dialog inherits
+## from model. It has a sw_canvas_container as the top-level
+## container and includes a button and a menu button.
+## The container is resizable in the x and y directions.
+##
+## The menu includes buttons Test and Test 1, a separator,
+## button Test 2 with an image, an empty container with a
+## minimum height and button Test 3.
+##
+## If the size of the outer container is reduced so that the
+## whole menu can't be displayed, scrollbars are added.
+##
+# activate with t << sw_simple_test_dialog.open()
+#
+def_slotted_exemplar( :sw_simple_test_dialog,
+	              {
+			      { :top_container, _unset },
+			      { :test_button,   _unset } 
+		      },
+		      :model )
+$
+
+sw_simple_test_dialog.define_slot_access( :test_button, :read, :public )
+$
+_pragma(classify_level=restricted)
+_method sw_simple_test_dialog.activate_in( a_frame )
+	## 
+	## 
+
+	.top_container << top_c << sw_canvas_container.new( a_frame, 1, _unset,
+							    :width, 200,
+							    :height, 200)
+
+	.test_button << sw_button_item.new( top_c, :label, "A Button",
+				            :row_alignment, :centre, :col_alignment, :centre)
+	
+	menu_b << sw_pulldown_menu_item.new( top_c, :label, "Menu Button",
+					:row_alignment, :centre, :col_alignment, :centre)
+	menu << menu_b.pulldown_menu
+
+	sw_menu_button_item.new( menu,
+				 :label, "Test" )
+
+	sw_menu_button_item.new( menu,
+				 :label, "Test 1" )
+	menu.add_separator()
+	
+	sw_menu_button_item.new( menu,
+				 :label, "Test 2",
+				 :image, {:help, :ui_resources} )
+	
+	c << sw_container.new( menu, 1, _unset,
+			       :min_height, 50 )
+
+	sw_menu_button_item.new( menu,
+				 :label, "Test 3" )
+
+_endmethod
+$

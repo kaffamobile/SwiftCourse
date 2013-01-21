@@ -1,0 +1,142 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+_pragma(classify_level=debug)
+## A formatted document test
+## Class sw_fdoc_test_dialog includes two border
+## containers (group boxes).
+##
+## These are used as containers for formatted documents.
+## The document in the upper container includes links to control
+## the contents of the lower container.
+## The lower container is assigned to a slot so it can be used
+## in the handle_link() method to display the required document.
+##
+# activate with t << sw_fdoc_test_dialog.open()
+#
+def_slotted_exemplar( :sw_fdoc_test_dialog,
+	              {
+			      { :data_container, _unset },
+			      { :top_container, _unset }
+		      },
+		      :model )
+$
+
+_pragma(classify_level=restricted)
+sw_fdoc_test_dialog.define_slot_access( :data_container, :read, :public )
+$
+_pragma(classify_level=restricted)
+sw_fdoc_test_dialog.define_slot_access( :top_container, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_fdoc_test_dialog.activate_in( a_frame )
+	## 
+	## 
+
+	.top_container << top_c << sw_canvas_container.new( a_frame, _unset, 1,
+							    :outer_spacing, 4,
+							    :row_spacing, 4,
+							    :col_spacing, 4,
+							    :resize_rows?, _true,
+							    :width, 250,
+							    :height, 500 )
+# Create the upper border container
+	bc1 << sw_border_container.new( top_c, 1, 1)
+
+	doc << formatted_document.new()
+# In this simple case, the dialog handles its own links	
+	doc.link_handler << _self
+# Add a heading, and two paragraphs with text and image elements	
+	doc.add_element( fdoc_heading_element.new( "A heading", :level, :h1))
+	pe << fdoc_paragraph_element.new()
+	pe.add_element( fdoc_text_element.new( "Text one," ))
+ 	pe.add_element( fdoc_text_element.new( "text two," ))
+ 	pe.add_element( fdoc_text_element.new( "text three." ))
+	doc.add_element(pe)
+	pe << fdoc_paragraph_element.new()
+	pe.add_element(fdoc_image_element.new( { "tick", "ui_resources" } ))
+	pe.add_element( fdoc_text_element.new("An image and some more text - lots and lots to fill up the line and demonstrate wrapping and scrolling."))
+	doc.add_element(pe)
+# Add each of the command links as a new paragraph (so
+# they come on separate lines). The href part of each link is
+# simply a key to define the action in handle_link()
+	doc.add_element( fdoc_heading_element.new( "Links", :level, :h2))
+	pe << fdoc_paragraph_element.new()
+	pe.add_element(fdoc_link_element.new( "this is a table link", "table" ))
+	doc.add_element(pe)
+	pe << fdoc_paragraph_element.new()
+	pe.add_element(fdoc_link_element.new( "this is a list link", "list" ))
+	doc.add_element(pe)
+	pe << fdoc_paragraph_element.new()
+	pe.add_element(fdoc_link_element.new( "this is an unknown link with tooltip", "xxx", _unset, :tooltip, "href is xxx" ))
+	doc.add_element(pe)
+	pe << fdoc_paragraph_element.new()
+	pe.add_element(fdoc_link_element.new( "this clears the data display", "remove" ))
+	doc.add_element(pe)
+# Display the document in the required container
+	doc.display_in(bc1)
+# Create the lower border container, with a label
+	bc2 << sw_border_container.new( top_c, 1, 1,
+					:label, "Data" )
+# Create a sw_container with one column within the border container as this
+# will be used to display lists and tables
+	.data_container << bc3 << sw_container.new(bc2, _unset, 1, :col_alignment, :fill, :row_alignment, :fill)
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_fdoc_test_dialog.handle_link( href )
+##	
+## Link handler method for simple case
+## Just uses href as a key to display the table or the list
+## as a formatted document in .data_container, or to clear
+## the container.
+##
+# Create a new document to hold the required element
+	link_doc << formatted_document.new()
+# Test the string supplied as href	
+	_if href = "table"
+	_then
+	# create a paragraph element and add table headings and table rows
+	      pe << fdoc_paragraph_element.new()
+	      # table has 4 rows, but set max_display_rows to 3
+	      pe.add_element( fdoc_table_element.new( {"one","two","three"},
+						{{ "r1,c1", "r1,c2", "r1,c3"},
+						 { "r2,c1", "r2,c2", "r2,c3"},
+						 { "r3,c1", "r3,c2", "r3,c3"},
+						 { "r4,c1", "r4,c2", "r4,c3"}},
+						 :max_display_rows, 3 ))
+	# Add the paragraph to the document and display it     
+	      link_doc.add_element(pe)
+	      link_doc.display_in(.data_container)
+	_elif href = "list"
+	      _then
+		# create a list element and add list items
+		    a_list << fdoc_list_element.new( _unset )
+		    _for i _over 1.upto( 10 )
+		    _loop
+			    a_list_item << fdoc_list_item_element.new( _unset )
+			    a_list_item.add_element( fdoc_text_element.new( write_string( "list item ", i )))
+			    a_list.add_element( a_list_item )
+		    _endloop
+		# Add the list to the document and display it
+		    link_doc.add_element(a_list)
+		    link_doc.display_in(.data_container)
+	_elif href = "remove"
+	# clear contents of container
+	_then .data_container.remove_all()
+	_else
+	# catch any other string in href
+	link_doc.add_element(fdoc_text_element.new(write_string( "Unknown link ", href)))
+	link_doc.display_in(.data_container)
+	_endif
+	# refresh container to update GUI
+	.data_container.refresh()
+_endmethod
+$

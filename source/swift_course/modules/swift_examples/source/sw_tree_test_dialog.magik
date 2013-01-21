@@ -1,0 +1,250 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+
+_pragma(classify_level=restricted)
+def_slotted_exemplar( :sw_tree_test_dialog,
+	              {
+			      { :tree,          _unset },
+			      { :colour_list,   _unset },
+			      { :colour_label,  _unset }
+		      },
+		      :model )
+$
+
+sw_tree_test_dialog.define_slot_access( :tree, :read, :public )
+$
+
+sw_tree_test_dialog.define_slot_access( :colour_list, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.activate_in( a_frame )
+	## 
+	##
+
+	a_frame.title << "Test Tree"
+	
+	top_c << sw_canvas_container.new( a_frame, 1, _unset,
+					  :width, 300,
+					  :height, 400 )
+
+	tree_con << sw_container.new( top_c, _unset, 1,
+				      :outer_spacing, 4,
+				      :row_spacing, 4,
+				      :row_resize_values, {1,0},
+				      :pre_draw_handler, sw_item_base.background_render_proc )
+
+	border_con << sw_border_container.new( tree_con, 1, 1,
+					       :outer_spacing, 4,
+					       :label, "Test Tree" )
+	
+	.colour_list << colour.colour_names	
+	
+	.tree << sw_tree.new( border_con,
+			      :model, _self,
+			      :selection_notifier, :selection_changed|()|,
+			      :data_selector, :populate_tree|()|,
+			      :aspect, :test_tree )
+	
+	bottom_con << sw_container.new( tree_con, 1, _unset,
+					:col_spacing, 8,
+					:col_alignment, :left )
+
+	sw_button_item.new( bottom_con,
+			    :label, "Populate Tree",
+			    :model, _self,
+			    :selector, :refresh_tree|()| )
+
+	.colour_label << sw_label_item.new( bottom_con, "" )
+
+	_self.changed( :test_tree, :renew )
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.refresh_tree()
+	## 
+	## 
+
+	.tree.remove_all()
+	_self.populate_tree()
+	.tree.refresh()
+
+	# or
+	
+#	_self.changed( :test_tree, :renew )
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.populate_tree()
+	## 
+	## 
+
+	_for row _over range( 1, 5 )
+	_loop
+		label << write_string( "Tree ", row )
+		con << sw_tree_element.new( .tree, :default_col_alignment, :left )
+		con.children_handler << handler.new( _self, :populate_tree_element|()|, con )
+		con.set_data( :label, label )
+		con.set_data( :depth, 1 )
+		con.add_content( {},
+				 {:check_box,
+				  :outer_spacing, 0,
+				  :model, _self,
+				  :change_selector, {:update_check_boxes|()|, con},
+				  :identifier, :check_box_item},
+				 {:label, label} )
+	_endloop
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.populate_tree_element( parent )
+	##
+	##
+
+	label << parent.data[:label]
+	child_depth << parent.data[:depth] + 1
+
+	rnd << random.new(2)
+
+	parent_value << parent.get_item(:check_box_item).value
+	
+	_for row _over range( 1, 5 )
+	_loop
+		con << sw_tree_element.new( parent, :default_col_alignment, :left )
+		
+		child_label << write_string( label, ".", row )
+		con.set_data( :label, child_label )
+
+		con.set_data( :depth, child_depth )
+		_if rnd.get() _is 0 _and child_depth < 4
+		_then
+			con.children_handler << handler.new( _self, :populate_tree_element|()|, con )
+		_endif
+		
+		a_colour_name << .colour_list[random.get() _mod .colour_list.size + 1]
+		a_colour << colour.called(a_colour_name)
+		con.set_data( :colour, a_colour )
+		
+		con.add_content( {:col_spacing, 6},
+				 {:check_box,
+				  :outer_spacing, 0,
+				  :value, parent_value,
+				  :model, _self,
+				  :change_selector, {:update_check_boxes|()|, con},
+				  :identifier, :check_box_item},
+				 {:label, child_label, :right_spacing, 8},
+				 {:label, "      ", :colour, a_colour},
+				 {:label, a_colour_name} )
+	_endloop
+
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.update_check_boxes( tree_con, value, check_box )
+	## 
+	## 
+
+	_self.update_parent_check_boxes( tree_con, value )
+	_self.update_children_check_boxes( tree_con, value )
+
+	.tree.refresh()
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.update_parent_check_boxes( tree_con, value )
+	## 
+	## 
+
+	parent_con << tree_con.parent_tree_element
+	_if parent_con _is _unset
+	_then
+		_return
+	_endif
+
+	parent_check_box << parent_con.get_item(:check_box_item)
+
+	_if value _is _maybe
+	_then
+		parent_check_box.int!value << _maybe
+		_self.update_parent_check_boxes( parent_con, _maybe )
+		_return
+	_endif
+	
+	children << parent_con.children
+	n << 0
+	_for child _over children.fast_elements()
+	_loop
+		child_value << child.get_item(:check_box_item).value
+		_if child_value _is _maybe
+		_then
+			n << 0.5
+			_leave
+				
+		_elif child_value _is _true
+		_then
+			n +<< 1
+		_endif
+	_endloop
+
+	parent_value << _if n _is 0
+			_then
+				>> _false
+				
+			_elif n _is children.size
+			_then
+				>> _true
+			_else
+				>> _maybe
+			_endif
+	parent_check_box.int!value << parent_value
+	_self.update_parent_check_boxes( parent_con, parent_value )
+		
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.update_children_check_boxes( tree_con, value )
+	## 
+	## 
+
+	_for child _over tree_con.children.fast_elements()
+	_loop
+		check_box << child.get_item(:check_box_item)
+		check_box.int!value << value
+		_self.update_children_check_boxes( child, value )
+	_endloop
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_tree_test_dialog.selection_changed( a_tree, selection )
+	## 
+	## 
+
+	_if ( sel << selection.an_element() ) _is _unset _orif
+	    ( a_colour << sel.get_data(:colour) ) _is _unset
+	_then
+		.colour_label.text << ""
+	_else
+		.colour_label.text << write_string( "Red: ", a_colour.red,
+						    "  Green: ", a_colour.green,
+						    "  Blue: ", a_colour.blue )
+	_endif
+	
+_endmethod
+$

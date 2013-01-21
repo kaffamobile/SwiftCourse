@@ -1,0 +1,96 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+
+_pragma(classify_level=debug)
+def_slotted_exemplar( :sw_list_test_dialog,
+	              {
+			      { :list, _unset }
+		      },
+		      :model )
+$
+
+sw_list_test_dialog.define_slot_access( :list, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_list_test_dialog.activate_in( a_frame )
+	## 
+	## Create a canvas container, a boder container and a list box.
+	##
+	top_con << sw_canvas_container.new( a_frame, _unset, 1,
+					    :outer_spacing, 2,
+					    :width, 350,
+					    :height, 400,
+					    :row_spacing, 2,
+					    :row_resize_values, {1,0} )
+	
+	border_con << sw_border_container.new( top_con, 1, 1,
+					       :outer_spacing, 2 )
+
+	.list << list << sw_list.new( border_con,
+				      :selection_mode, :many )
+	# construct list items with a sample of each colour and its name
+	_for a_colour_name _over colour.colour_names.fast_elements()
+	_loop
+		con << sw_container.new( list, 1, _unset,
+					 :outer_spacing, 3,
+					 :col_spacing, 4 )
+		sw_label_item.new( con, "      ", :colour, colour.called(a_colour_name))
+		sw_label_item.new( con, colour.called(a_colour_name).name)
+	_endloop
+
+	# Add Search control, with prompt text and button to clear 
+	search_con << sw_border_container.new( top_con, 1, _unset,
+					       :col_alignment, :left,
+					       :left_spacing, 2,
+					       :right_spacing, 2,
+					       :top_spacing, 1,
+					       :bottom_spacing, 1,
+					       :border_points_method, :rounded_rectangle_points_2|()|,
+					       :colour, colour.called(:white) )
+
+	search_item << sw_text_item.new( search_con,
+					 :model, _self,
+					 :incremental_change_selector, :search_list|()|,
+					 :display_length, 25,
+					 :min_height, _unset,
+					 :show_border?, _false,
+					 :prompt_text, "Search List" )
+
+	sw_button_item.new( search_con,
+			    :image, {:delete, :ui_resources},
+			    :model, _self,
+			    :selector, {:clear_search|()|, search_item},
+			    :show_highlight?, _false,
+			    :outer_spacing, 0,
+			    :min_height, _unset,
+			    :tooltip, "Clear Search" )
+
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_list_test_dialog.search_list( value )
+	## 
+	## Apply filter to list items
+	##
+	.list.filter( write_string("*",value,"*"), _true )
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_list_test_dialog.clear_search( search_item )
+	## 
+	## Clear filter and display all list items
+	##
+	search_item.value << ""
+	.list.clear_filter( _true )
+_endmethod
+$
+
+

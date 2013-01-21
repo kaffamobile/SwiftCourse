@@ -1,0 +1,60 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package user
+#
+# Build and save the closed image for the Cambridge Database,
+# then quit.
+#
+# Must be run by 'load_file()'
+# Must be located 'next to' the modules directory
+#
+
+_block
+	smallworld_product.add_product(system.getenv("cambridge_root"))
+	sw_module_manager.load_module("cam_db_image_closed_swaf")
+	
+	# Call garbage collect a couple of times so we do not save more
+	# than is needed.
+	system.gc(_true )
+	system.gc(_true )
+	
+_endblock
+$
+
+_block
+    
+	# Derive the directory to save images into.
+	_local images_dir << system.pathname_down(
+				 system.pathname_up(!source_file!, 1),
+				 "images"
+				    )
+	
+	# Define the image file that will be run - this is merely a
+	# redirction file which will point to the real image.
+	_local image_name << "cam_db_closed_swaf.msf"
+
+	# Define the image file we actually want to save to.
+	_local internal_image_name << "main\cam_db_closed_swaf_main.msf"
+
+	# Save the image and quit
+	save_image_startup(system.pathname_from_components(internal_image_name,
+							   images_dir),
+			   :redirection_file,
+			   system.pathname_from_components(image_name,
+							   images_dir),
+			   :cache_pages, :calculate,
+			   :startup_proc,_unset,
+			   :quit?, _true)
+_endblock
+$
+
+
+
+
+
+
+

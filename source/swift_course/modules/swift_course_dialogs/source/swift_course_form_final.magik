@@ -1,0 +1,99 @@
+#% text_encoding = utf8
+
+_package user
+
+_pragma(classify_level=basic, usage=internal)
+def_slotted_exemplar(:swift_course_form_final, {}, :model)
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form_final.activate_in(frame)
+	_local canvas << sw_canvas_container.new(
+		frame,
+		_unset, 1,
+		:min_width,  500,
+		:min_height, 300,
+		:outer_spacing, 5,
+		:row_resize_values, {1, 0}
+	)
+
+	_self.create_content(canvas)
+
+	_self.title << "SWIFT Course Form"
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_private _method swift_course_form_final.create_content(parent)
+	_local border_container << sw_border_container.new(parent, 1, 1, :label, "Instellingen")
+	_local container << sw_container.new(
+		border_container, 10, 2,
+		:outer_spacing,     3,
+		:top_spacing,       5,
+		:row_resize_values, {0,0,0,0,0,0,0,0,0,1},
+		:col_resize_values, {0, 1},
+		:col_spacing, 3,
+		:row_spacing, 3,
+		:default_col_alignment, :left,
+		:default_row_alignment, :top
+	)
+	
+	sw_label_item.new(container, "Tekstvak", :min_width, 100)
+	sw_text_item.new(container, :editable?, _true, :col_alignment, :fill, :prompt_text, "Voer hier tekst in")
+	
+	sw_label_item.new(container, "Tekstvak alleen lezen")
+	sw_text_item.new(container, :editable?, _false, :col_alignment, :fill, :value, "Niet wijzigbaar")
+	
+	sw_label_item.new(container, "Lengte in meters")
+	sw_managed_text_item.new(container, :editable?, true, :col_alignment, :fill, :manager, unit_value_manager.new(unit_manager.unit(:m)))
+	
+	sw_label_item.new(container, "Dropdown lijst")
+	sw_text_item.new(container, :min_width, 100, :display_length, 16, :editable?, _false, :text_items, {"Een", "Twee", "Drie", "Vier"})
+	
+	sw_label_item.new(container, "Combobox")
+	sw_text_item.new(container, :min_width, 100, :display_length, 16, :editable?, _true, :text_items, {"Alpha", "Beta", "Gamma", "Delta"})
+	
+	sw_label_item.new(container, "Checkbox")
+	sw_check_box_item.new(container)
+
+	sw_label_item.new(container, "Radio buttons")
+	_local radio_container << sw_container.new(container, _unset, 1, :default_col_alignment, :left)
+	_local radio_group << sw_radio_group.new(_true)
+	radio_group.add(sw_toggle_item.new(radio_container, :label, "Eerste optie"))
+	radio_group.add(sw_toggle_item.new(radio_container, :label, "Tweede optie"))
+	radio_group.add(sw_toggle_item.new(radio_container, :label, "Derde optie"))
+	
+
+	_local button_container << sw_container.new(
+		parent,
+		1, 3,
+		:col_spacing,    5,
+		:resize_x?,      _true,
+		:col_alignment,  :right,
+		:top_spacing,    8
+	)
+	
+	sw_button_item.new(
+		button_container,
+		:label,     "OK",
+		:min_width, 72
+	)
+	
+	sw_button_item.new(
+		button_container,
+		:label,     "Cancel",
+		:min_width, 72
+	)
+	sw_button_item.new(
+		button_container,
+		:label,     "Apply",
+		:min_width, 72
+	)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form_final.test_dialog()
+	_return _self.exemplar.new().activate()
+_endmethod
+$

@@ -1,0 +1,159 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+_pragma(classify_level=debug)
+## Demonstration of resizing and alignment properties of
+## containers and buttons. Also shows tooltips for buttons.
+## The rows and columns of c2 are resizable, so the internal
+## boundaries can be dragged.
+##
+## Buttons Show 4 and Hide 4 are defined with selector methods
+## to set the managed? property for Button 4 and refresh the
+## button's owning container.
+##
+# activate with t << sw_canvas_container_test_dialog.open()
+#
+def_slotted_exemplar( :sw_canvas_container_test_dialog,
+	              {
+			      { :top_container, _unset },
+			      { :test_button,   _unset } 
+		      },
+		      :model )
+$
+
+sw_canvas_container_test_dialog.define_slot_access( :top_container, :read, :public )
+$
+
+_pragma(classify_level=restricted)
+_method sw_canvas_container_test_dialog.activate_in( a_frame )
+	## 
+	## 
+
+	.top_container << top_c << sw_canvas_container.new( a_frame, 2, 1,
+							    :width, 200,
+							    :height, 300,
+							    :outer_spacing, 3,
+							    :row_resize_values, {0,100} )
+
+	
+	c1 << sw_border_container.new( top_c, 1, _unset,
+			       :row_alignment, :top,
+			       :col_alignment, :fill,
+			       :outer_spacing, 4,
+			       :col_spacing, 3,
+			       :label, "c1")
+	
+	a_button << sw_button_item.new( c1,
+					:label,   "Menu 1",
+					:tooltip, "Menu 1" )
+
+	a_button << sw_button_item.new( c1,
+					:label,   "Menu 2",
+					:tooltip, "Menu 2" )
+
+	a_button << sw_button_item.new( c1,
+					:label,   "Menu 3",
+					:tooltip, "Menu 3", :col_alignment, :right )	
+
+
+	c2 << sw_border_container.new( top_c, 2, 2,
+				:outer_spacing, 3,
+				:row_spacing, 3,
+				:col_spacing, 6,
+				:resize_rows?, _true,
+				:resize_cols?, _true,
+				:row_resize_values, {50,50},
+				:col_resize_values, {50,50},
+				:label, "c2")
+	
+	a_button << sw_button_item.new( c2,
+					:label,         "Button 1",
+					:tooltip,       "Button 1",
+					:row_alignment, :top,
+					:col_alignment, :right )
+
+	a_button << sw_button_item.new( c2,
+					:label,     "Button 2",
+					:tooltip,   "Button 2" )
+	a_button.resize_x? << _true
+	a_button.resize_y? << _true
+	
+	a_button << sw_button_item.new( c2,
+					:label,   "Button 3",
+					:tooltip, "Button 3" )
+	a_button.resize_x? << _true
+	a_button.resize_y? << _true
+
+
+	c3 << sw_border_container.new( c2, 3, 1,
+			       :outer_spacing, 4,
+			       :row_spacing, 3,
+			       :row_alignment, :centre,
+			       :label, "c3")
+	
+	a_button << sw_button_item.new( c3,
+					:model,     _self,
+					:selector,  :hide_button|()|,
+					:label,     "Hide",
+					:tooltip,   "Hide split button" )
+
+	a_button << sw_button_item.new( c3,
+					:model,    _self,
+					:selector, :show_button|()|,
+					:label,    "Show",
+					:tooltip,  "Show split button" )
+	
+	# set up items for split menu (button_choice_item)
+	items << { property_list.new_with(:value, :help, :image, {:help_16x16, :magik_gui_components},
+					  :label, "Help"),
+		   property_list.new_with(:value, :warning, :image, {:warning_16x16, :magik_gui_components},
+					  :label, "Warning"),
+		   property_list.new_with(:value, :error, :image, {:error_16x16, :magik_gui_components},
+					  :label, "Error") }
+
+	.test_button << sw_button_choice_item.new( c3,
+						:model, _self,
+						:tooltip, "Split button",
+						:selector, :button_callback|()|,
+						:button_items, items,
+						:show_last_choice?, _true )
+	.test_button.resize_x? << _false
+	.test_button.resize_y? << _false
+		
+_endmethod
+$
+	
+_pragma(classify_level=restricted)
+_method sw_canvas_container_test_dialog.hide_button()
+	## 
+	##
+
+	.test_button.managed? << _false
+	.test_button.top_container.refresh()
+	
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_canvas_container_test_dialog.show_button()
+	## 
+	##
+
+	.test_button.managed? << _true
+	.test_button.top_container.refresh()
+
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method sw_canvas_container_test_dialog.button_callback( value )
+	## 
+	## 
+
+	write( "Selected value = ", value )
+_endmethod
+$

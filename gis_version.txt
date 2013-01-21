@@ -1,0 +1,3 @@
+  name                version                   directory
+  -----------------   ------------------------   --------------------------------
+  SW43                430                       \\storage\Products\Gis430\product

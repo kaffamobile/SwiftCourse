@@ -1,0 +1,111 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+
+_package sw
+
+_pragma(classify_level=basic)
+def_slotted_exemplar(:swift_table_sort_example,
+	{{:controls, _unset}}, 
+	:model)
+$
+
+_pragma(classify_level=restricted)
+_private _method swift_table_sort_example.init()
+	## 
+	## 
+	.controls << property_list.new()
+
+	_return _self
+_endmethod
+$
+
+_pragma(classify_level=basic)
+_method swift_table_sort_example.activate_in(a_frame)
+	## 
+	## Build the GUI and set up the table control
+	
+	top_c << sw_canvas_container.new(a_frame, 1, 1,
+					 :outer_spacing, 6,
+					 :width, 500,
+					 :height, 400)
+	
+	.controls[:table] <<
+		sw_table.new(top_c,
+			     :row_height, 20,
+		# use this line to select individual cells
+		#	     :selection_type, :cell,                  # select individual cells
+		# use this line to select whole rows
+			     :selection_type, :row,                   # select whole rows  
+			     :selection_mode, :many,                  # can select more than one row
+			     :model, _self,
+			     :aspect, :colour_list,
+			     :row_lines?, _true,
+			     :data_selector, :|colour_list_data()|,
+			     :enable_manage_columns?, _true)          # add column management buttons
+	                                                              # to column heading menus
+
+
+
+# set up the columns - use this command for 6 columns
+        .controls[:table].set_column_labels({"No.", "Colour", "Red", "Blue", "Green", "Sample"})
+
+# set up the columns - use this command to include a 7th column
+# with checkbox
+#	.controls[:table].set_column_labels({"No.", "Colour", "Red", "Blue", "Green", "Sample", "Check"})
+	
+	# set up the sort procedure for the columns
+	.controls[:table].set_column_sort_procedure(1, .controls[:table].strings_with_numbers_sort_proc)
+	.controls[:table].set_column_sort_procedure(2, .controls[:table].default_sort_proc)
+	.controls[:table].set_column_sort_procedure(3, .controls[:table].default_sort_proc)
+	.controls[:table].set_column_sort_procedure(4, .controls[:table].default_sort_proc)
+	.controls[:table].set_column_sort_procedure(5, .controls[:table].default_sort_proc)
+	
+	# make columns 3 and 5 show icons
+		.controls[:table].set_column_image(3, {:traffic_light_red, :ui_resources})
+		.controls[:table].set_column_image(5, {:traffic_light_green, :ui_resources})
+
+	# Add filter controls to the column header menu for column 2
+
+	.controls[:table].enable_column_filter(2, _true)
+_endmethod
+$
+
+_pragma(classify_level=basic)
+_method swift_table_sort_example.colour_list_data(a_table)
+	## 
+	## Populate the table
+
+	row << 0
+
+	_for a_colour_name _over colour.colour_names.fast_elements()
+	_loop
+		row +<< 1
+		a_table.add_cell(row, 1, {}, {:label, row.write_string})
+# use this line for a read-only label
+		a_table.add_cell(row, 2, {}, {:label, colour.called(a_colour_name).name})
+# use this line for an editable text item, with border
+#		a_table.add_cell(row, 2, {}, {:text_item, :value, colour.called(a_colour_name).name})
+		a_table.add_cell(row, 3, {}, {:label, colour.called(a_colour_name).red})
+		a_table.add_cell(row, 4, {}, {:label, colour.called(a_colour_name).blue})
+		a_table.add_cell(row, 5, {}, {:label, colour.called(a_colour_name).green})
+		a_table.add_cell(row, 6, {:colour, colour.called(a_colour_name)}, {:label, "  "})
+# include this line for a 7th column with checkbox (must have
+# headings for 7 columns)
+#		a_table.add_cell(row, 7, {}, {:check_box})
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=basic)
+_method swift_table_sort_example.on_activation()
+	## 
+	## Call refresh to do the initial population
+	
+	_self.changed(:colour_list, :refresh)
+_endmethod
+$
+

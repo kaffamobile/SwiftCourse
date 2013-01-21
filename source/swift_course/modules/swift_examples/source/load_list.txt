@@ -1,0 +1,10 @@
+sw_border_container_test_dialog
+sw_canvas_container_test_dialog
+sw_fdoc_test_dialog
+sw_list_test_dialog
+sw_scrollable_container_test_dialog
+sw_simple_test_dialog
+sw_simple_widget_test_dialog
+sw_tab_container_test_dialog
+sw_tree_test_dialog
+swift_table_sort_example

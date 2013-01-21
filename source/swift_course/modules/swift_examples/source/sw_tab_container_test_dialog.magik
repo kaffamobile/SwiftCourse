@@ -1,0 +1,76 @@
+#% text_encoding = iso8859_1
+# ************************************************************ 
+#							       
+# (c) 2005-2012 General Electric Company. All Rights Reserved. 
+#							       
+# ************************************************************ 
+_package sw
+
+_pragma(classify_level=restricted)
+def_slotted_exemplar( :sw_tab_container_test_dialog,
+	              {
+			      { :top_container, _unset },
+			      { :a_button,      _unset }
+		      },
+		      :model )
+$
+
+_pragma(classify_level=restricted)
+_method sw_tab_container_test_dialog.activate_in( a_frame )
+	## 
+	## 
+
+	.top_container << top_c << sw_canvas_container.new( a_frame, 1, 1,
+							    :outer_spacing, 4,
+							    :width, 500,
+							    :height, 400 )
+
+	a_con << sw_container.new( top_c, 1, _unset)
+
+# Add tab container, set colour and page colour	
+	tab_con << sw_tab_container.new( a_con,
+					 :colour, colour.called(:mistyrose),
+					 :page_colour, colour.called(:lavender) )
+
+# Add tabs with labels, width of each tab fits its label,
+# height of all tabs fits tallest label	
+	# Tab 1, default tab label
+	page_con << tab_con.new_tab()
+	sw_label_item.new( page_con, "Tab 1" )
+
+	# Tab 2, tab label supplied as text
+	page_con << tab_con.new_tab( "Tab 2" )
+	sw_label_item.new( page_con, "Tab 2" )
+
+	# Tab 3, image locator and no text for tab label
+	page_con << tab_con.new_tab( _unset, {:find, :ui_resources} )
+	sw_label_item.new( page_con, "Tab 3" )
+	
+	# Tab 4, text and image locator for tab label, placed vertically
+	page_con << tab_con.new_tab( "Tab 4", {:find, :ui_resources} )
+	sw_label_item.new( page_con, "Tab 4" )
+
+	# Tab 5, container with text and image in one row for tab label
+	c << sw_container.new( _unset, 1, _unset,
+			       :col_spacing, 4 )
+	sw_image_item.new( c, {:find, :ui_resources} )
+	sw_label_item.new( c, "Number 5" )
+	page_con << tab_con.add_tab( c )
+	
+# Build vertical tabs in this container, set page colour, default tab labels
+	vtab_c << sw_vertical_tab_container.new( page_con )
+	vtab_c.page_colour << colour.called(:lightcyan) 
+
+	a_container << vtab_c.new_tab()
+	sw_label_item.new( a_container, "Tab 1" )
+
+	a_container << vtab_c.new_tab()
+	sw_label_item.new( a_container, "Tab 2" )
+
+	a_container << vtab_c.new_tab()
+	sw_label_item.new( a_container, "Tab 3" )
+	
+_endmethod
+$
+
+

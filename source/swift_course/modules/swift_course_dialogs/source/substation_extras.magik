@@ -1,0 +1,63 @@
+#% text_encoding = utf8
+
+_package user
+
+substation.define_shared_constant(:network_follower, network_follower.new(), :private)
+$
+
+_pragma(classify_level=advanced, usage={external}, topic={substation})
+_iter _method substation.customers()
+	_for supply_point _over _self.supply_points()
+	_loop
+		_if supply_point.customer _isnt _unset
+		_then
+			_loopbody(supply_point.customer)
+		_endif
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=advanced, usage={external}, topic={substation})
+_iter _method substation.supply_points()
+	_for supply_point _over _self.external_connected_rwos(predicate.eq(:rwo_type, :supply_point))
+	_loop
+		_loopbody(supply_point)
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=advanced, usage={external}, topic={substation})
+_iter _method substation.external_connected_rwos(_optional test_predicate)
+	#If predicate is not supplied; use default predicate (true)
+	test_predicate << test_predicate.default(predicate)
+	_local nf << _self.network_follower
+
+	
+	_for link _over _self.substation_internals_links()
+	_loop
+		_local result << nf.trace_out(link.external_pin.node)
+
+		_for rwo _over nf.results_as_rwos(result).fast_elements()
+		_loop
+			_if test_predicate.test?(rwo)
+			_then
+				_loopbody(rwo)
+			_endif
+		_endloop
+	_endloop
+_endmethod
+$
+
+_pragma(classify_level=restricted, usage={internal}, topic={substation})
+_iter _method substation.substation_internals_links()
+	_if _self.world _isnt _unset _then
+		_for g _over _self.world.geometries(:point)
+		_loop
+			_if g.rwo_type _is :substation_internals_link
+			_then
+				_loopbody(g.rwo)
+			_endif
+		_endloop
+	_endif
+_endmethod
+$
