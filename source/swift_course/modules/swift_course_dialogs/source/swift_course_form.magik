@@ -80,8 +80,9 @@ $
 _pragma(classify_level=basic, usage=internal)
 _method swift_course_form.create_managed_text_item(parent)
 	sw_label_item.new(parent, "Lengte in meters")
-	# TODO: configure manager
-	sw_managed_text_item.new(parent, :col_alignment, :fill)
+	sw_managed_text_item.new(parent,
+		:col_alignment, :fill,
+		:manager, _self.meter_units_manager())
 _endmethod
 $
 
@@ -130,5 +131,11 @@ _method swift_course_form.create_buttons(parent)
 	sw_button_item.new(button_container, :label, "OK", :min_width, 72)
 	sw_button_item.new(button_container, :label, "Cancel", :min_width, 72)
 	sw_button_item.new(button_container, :label, "Apply", :min_width, 72)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.meter_units_manager()
+	>> unit_value_manager.new(:m)
 _endmethod
 $
