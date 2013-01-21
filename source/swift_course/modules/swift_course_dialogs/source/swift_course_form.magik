@@ -107,7 +107,7 @@ $
 
 _pragma(classify_level=basic, usage=internal)
 _method swift_course_form.create_radio_buttons(parent)
-	sw_label_item.new(parent, "Radio buttons")
+	sw_label_item.new(parent, "Radio buttons", :row_alignment, :top)
 	group_item << sw_radio_group.new(_true)
 	toggle_container << sw_container.new(parent, 3, 1)
 	toggles << rope.new()
