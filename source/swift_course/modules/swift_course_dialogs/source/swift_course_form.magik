@@ -48,6 +48,7 @@ $
 _method swift_course_form.create_form_controls(parent)
 	form_controls << sw_container.new(parent, 10, 2,
 		:default_col_alignment, :left,
+		:outer_spacing, 5,
 		:row_spacing, 5,
 		:col_spacing, 5,
 		:col_resize_values, {0, 1},
