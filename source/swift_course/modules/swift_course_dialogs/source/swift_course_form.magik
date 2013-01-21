@@ -14,7 +14,9 @@ _method swift_course_form.activate_in(frame)
 		:height,     300,
 		:width,      400,
 		:min_width,  400,
-		:min_height, 300
+		:min_height, 300,
+		:outer_spacing, 5,
+		:row_resize_values, {1, 0}
 	)
 
 	_self.create_content(canvas)
@@ -24,13 +26,108 @@ _endmethod
 $
 
 _pragma(classify_level=basic, usage=internal)
-_private _method swift_course_form.create_content(parent)
-
+_method swift_course_form.test_dialog()
+	_return _self.exemplar.new().activate()
 _endmethod
 $
 
 _pragma(classify_level=basic, usage=internal)
-_method swift_course_form.test_dialog()
-	_return _self.exemplar.new().activate()
+_private _method swift_course_form.create_content(parent)
+	_self.create_groupbox(parent)
+	_self.create_buttons(parent)
+_endmethod
+$
+
+_method swift_course_form.create_groupbox(parent)
+	group_box << sw_border_container.new(parent, 1, 1,
+	     :label, "Instellingen")
+	_self.create_form_controls(group_box)
+_endmethod
+$
+
+_method swift_course_form.create_form_controls(parent)
+	form_controls << sw_container.new(parent, 10, 2,
+		:default_col_alignment, :left,
+		:row_spacing, 5,
+		:col_spacing, 5,
+		:col_resize_values, {0, 1},
+		:row_resize_values, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1})
+	_self.create_plain_text_item(form_controls)
+	_self.create_readonly_text_item(form_controls)
+	_self.create_managed_text_item(form_controls)
+	_self.create_dropdown_list(form_controls)
+	_self.create_combo_box(form_controls)
+	_self.create_checkbox(form_controls)
+	_self.create_radio_buttons(form_controls)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_plain_text_item(parent)
+	sw_label_item.new(parent, "Tekstvak")
+	sw_text_item.new(parent, :prompt_text, "dag", :col_alignment, :fill)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_readonly_text_item(parent)
+	sw_label_item.new(parent, "Tekstvak alleen lezen")
+	sw_text_item.new(parent, :editable?, _false, :value, "Niet wijzigbaar", :col_alignment, :fill)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_managed_text_item(parent)
+	sw_label_item.new(parent, "Lengte in meters")
+	# TODO: configure manager
+	sw_managed_text_item.new(parent, :col_alignment, :fill)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_dropdown_list(parent)
+	sw_label_item.new(parent, "Dropdown lijst")
+	sw_text_item.new(parent, :editable?, _false, :text_items, {"Een", "Twee", "Drie"})
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_combo_box(parent)
+	sw_label_item.new(parent, "Combobox")
+	sw_text_item.new(parent, :editable?, _true, :text_items, {"Alpha", "Beta"})
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_checkbox(parent)
+	sw_label_item.new(parent, "Checkbox")
+	sw_check_box_item.new(parent)
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_form.create_radio_buttons(parent)
+	sw_label_item.new(parent, "Radio buttons")
+	group_item << sw_radio_group.new(_true)
+	toggle_container << sw_container.new(parent, 3, 1)
+	toggles << rope.new()
+	toggles.add(sw_toggle_item.new(toggle_container, :label, "Optie 1"))
+	toggles.add(sw_toggle_item.new(toggle_container, :label, "Optie 2"))
+	toggles.add(sw_toggle_item.new(toggle_container, :label, "Optie 3"))
+	_for toggle  _over toggles.fast_elements()
+	_loop
+		group_item.add(toggle)
+	_endloop
+_endmethod
+$
+
+_method swift_course_form.create_buttons(parent)
+	button_container << sw_container.new(parent, 1, 3,
+		:col_alignment, :right,
+		:outer_spacing, 5,
+		:col_spacing, 5)
+	sw_button_item.new(button_container, :label, "OK", :min_width, 72)
+	sw_button_item.new(button_container, :label, "Cancel", :min_width, 72)
+	sw_button_item.new(button_container, :label, "Apply", :min_width, 72)
 _endmethod
 $
