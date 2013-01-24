@@ -32,7 +32,7 @@ _endmethod
 $
 
 _pragma(classify_level=basic, usage=internal)
-_private _method swift_course_form.create_content(parent)
+_method swift_course_form.create_content(parent)
 	_self.create_groupbox(parent)
 	_self.create_buttons(parent)
 _endmethod

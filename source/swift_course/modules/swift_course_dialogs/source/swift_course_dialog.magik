@@ -63,10 +63,28 @@ _private _method swift_course_dialog.create_content(parent)
 	_local tab_container << sw_vertical_tab_container.new(parent)
 	
 	_local form_page  << tab_container.new_tab("Form",      {:application_form,      :silk_ui_resources})
+	_self.add_form_page(form_page)
 	_local tree_page  << tab_container.new_tab("Tree",      {:sitemap_color,         :silk_ui_resources})
 	_local table_page << tab_container.new_tab("Table",     {:table,                 :silk_ui_resources})
 	_local align_page << tab_container.new_tab("Alignment", {:application_view_tile, :silk_ui_resources})
 	_local doc_page   << tab_container.new_tab("Document",  {:page_white_text,       :silk_ui_resources})
+_endmethod
+$
+
+_private _method swift_course_dialog.add_form_page(parent)
+	_local canvas << sw_container.new(
+		parent,
+		_unset, 1,
+		:height,     300,
+		:width,      400,
+		:min_width,  400,
+		:min_height, 300,
+		:outer_spacing, 5,
+		:row_resize_values, {1, 0}
+	)
+
+	form_control << swift_course_form.new()
+	form_control.create_content(canvas)
 _endmethod
 $
 
