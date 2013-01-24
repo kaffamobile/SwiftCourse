@@ -1,0 +1,5 @@
+_block
+	smallworld_product.add_product("c:\worksource\SwiftCourse\source\swift_course\")
+	sw_module_manager.load_module(:swift_course_dialogs)
+_endblock
+$
