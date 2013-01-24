@@ -101,34 +101,32 @@ $
 _method swift_course_dialog.tree_content(parent)
 	_for substation _over _self.substation_col().fast_elements()
 	_loop
-		station_node << sw_tree_element.new(parent, :default_col_alignment, :left)
-		sw_label_item.new(station_node, substation.known_as, :min_width, 200)
-		sw_button_item.new(station_node,
-				   :model, _self,
-				   :selector, {:goto_object|()|, substation},
-				   :image, {:picture_go, :silk_ui_resources})
-		sw_button_item.new(station_node,
-				   :model, _self,
-				   :selector, {:select_object|()|, substation.location},
-				   :image, {:picture_edit, :silk_ui_resources})
-		_self.add_supply_points(station_node, substation)
+		substation_node << _self.add_tree_node(parent, substation, :known_as),
+		_self.add_supply_points(substation_node, substation)
 	_endloop
+_endmethod
+$
+
+_pragma(classify_level=basic, usage=internal)
+_method swift_course_dialog.add_tree_node(parent, an_rwo, label_method)
+	node_container << sw_tree_element.new(parent, :default_col_alignment, :left)
+	sw_label_item.new(node_container, an_rwo.perform(label_method), :min_width, 200)
+	sw_button_item.new(node_container,
+			   :model, _self,
+			   :selector, {:goto_object|()|, an_rwo},
+			   :image, {:picture_go, :silk_ui_resources})
+	sw_button_item.new(node_container,
+			   :model, _self,
+			   :selector, {:select_object|()|, an_rwo.location},
+			   :image, {:picture_edit, :silk_ui_resources})
+	>> node_container
 _endmethod
 $
 
 _method swift_course_dialog.add_supply_points(parent, substation)
 	_for supply_point _over substation.supply_points()
 	_loop
-		supply_point_node << sw_tree_element.new(parent, :default_col_alignment, :left)
-		sw_label_item.new(supply_point_node, supply_point.id)
-		sw_button_item.new(supply_point_node,
-				   :model, _self,
-				   :selector, {:goto_object|()|, supply_point},
-				   :image, {:picture_go, :silk_ui_resources})
-		sw_button_item.new(supply_point_node,
-				   :model, _self,
-				   :selector, {:select_object|()|, supply_point.location},
-				   :image, {:picture_edit, :silk_ui_resources})
+		_self.add_tree_node(parent, supply_point, :id)
 	_endloop
 _endmethod
 $
