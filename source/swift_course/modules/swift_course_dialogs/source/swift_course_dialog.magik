@@ -62,12 +62,13 @@ _pragma(classify_level=basic, usage=internal)
 _private _method swift_course_dialog.create_content(parent)
 	_local tab_container << sw_vertical_tab_container.new(parent)
 	
-	_local form_page  << tab_container.new_tab("Form",      {:application_form,      :silk_ui_resources})
-	_self.add_form_page(form_page)
 	_local tree_page  << tab_container.new_tab("Tree",      {:sitemap_color,         :silk_ui_resources})
+	_local form_page  << tab_container.new_tab("Form",      {:application_form,      :silk_ui_resources})
 	_local table_page << tab_container.new_tab("Table",     {:table,                 :silk_ui_resources})
 	_local align_page << tab_container.new_tab("Alignment", {:application_view_tile, :silk_ui_resources})
 	_local doc_page   << tab_container.new_tab("Document",  {:page_white_text,       :silk_ui_resources})
+	_self.add_form_page(form_page)
+	_self.add_tree_page(tree_page)
 _endmethod
 $
 
@@ -88,6 +89,33 @@ _private _method swift_course_dialog.add_form_page(parent)
 _endmethod
 $
 
+_private _method swift_course_dialog.add_tree_page(parent)
+	sw_tree.new(parent,
+		:model, _self,
+		:data_selector, :tree_content|()|,
+		:aspect, :tree_content)
+	_self.changed(:tree_content, :refresh)
+_endmethod
+$
+
+_method swift_course_dialog.tree_content(parent)
+	_for substation _over _self.substation_col().fast_elements()
+	_loop
+		station_node << sw_tree_element.new(parent)
+		sw_label_item.new(station_node, substation.known_as)
+		_self.add_supply_points(station_node, substation)
+	_endloop
+_endmethod
+$
+
+_method swift_course_dialog.add_supply_points(parent, substation)
+	_for supply_point _over substation.supply_points()
+	_loop
+		sw_label_item.new(sw_tree_element.new(parent), supply_point.id)
+	_endloop
+_endmethod
+$
+
 _pragma(classify_level=basic, usage=internal)
 _method swift_course_dialog.goto_object(object)
 	_self.application.plugin(:maps).goto(object)
@@ -104,5 +132,15 @@ $
 _pragma(classify_level=basic, usage=internal)
 _method swift_course_dialog.test_dialog()
 	_return _self.exemplar.new().activate()
+_endmethod
+$
+
+_private _method swift_course_dialog.substation_col()
+	>> _self.electricity_view().collection(:substation)
+_endmethod
+$
+
+_private _method swift_course_dialog.electricity_view()
+	>> gis_program_manager.cached_dataset(:electricity)
 _endmethod
 $
