@@ -44,13 +44,23 @@ _private _method swift_course_dialog.create_toolbar(parent)
 		_false,
 		:background_type,   :container,
 		:show_separators?,  _true
-	)
+							 )
+
+	t1 << toolbar_container.create_toolbar(:col_spacing, 2)
+	sw_button_item.new(t1, :image, {:application, :silk_ui_resources})
+	sw_button_item.new(t1, :image, {:application_add, :silk_ui_resources})
+	sw_button_item.new(t1, :image, {:application_delete, :silk_ui_resources})
+	# TODO: add split
+	t2 << toolbar_container.create_toolbar(:col_spacing, 2)
+	sw_button_item.new(t2, :image, {:application_form, :silk_ui_resources})
+	sw_button_item.new(t2, :image, {:application_form_add, :silk_ui_resources})
+	sw_button_item.new(t2, :image, {:application_form_delete, :silk_ui_resources})
 _endmethod
 $
 
 _pragma(classify_level=basic, usage=internal)
 _private _method swift_course_dialog.create_content(parent)
-	_local tab_container << sw_tab_container.new(parent)
+	_local tab_container << sw_vertical_tab_container.new(parent)
 	
 	_local form_page  << tab_container.new_tab("Form",      {:application_form,      :silk_ui_resources})
 	_local tree_page  << tab_container.new_tab("Tree",      {:sitemap_color,         :silk_ui_resources})
